@@ -36,6 +36,9 @@ class ZIPArticleSource(pyzim.IterArticleSource):
     def __iter__(self):
         for lvl, webpage in self.coll.outline.walk(cls=WebPage):
             title = webpage.title
+            # slashes in the title break correct display in kiwix.
+            # don't know if this is a bug in any of the writers or in the reader...
+            title = title.replace('/', '')
             aid = title # webpage.id FIXME
             url = aid # FIXME
             article = pyzim.Article(title, aid=aid, url=url, mimetype='text/html', namespace='A')
