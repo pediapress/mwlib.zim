@@ -13,7 +13,7 @@ version=None
 execfile(distutils.util.convert_path('mwlib/zim/_version.py')) 
 # adds 'version' to local namespace
 
-install_requires=['pyzim']
+install_requires=['mwlib', 'pyzim', 'lxml', 'gevent']
 
 def read_long_description():
     fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), "README.txt")
