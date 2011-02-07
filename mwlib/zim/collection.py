@@ -122,14 +122,17 @@ class WebPage(object):
         self.tree = self._get_parse_tree(data=content)
         self.fetch_images()
 
-    def fetch_images(self, num_conns=10):
-        srcs = set()
-        for img in self.tree.xpath('//img'):
-            # FIXME: thumbnail and hires images are fetched, only fetch hires if available.
-            # if fetch error for hires occurs fallback to low res
-            for src in [img.attrib.get('hiressrc'), img.attrib.get('src')]:
-                if src:
-                    srcs.add(src.strip())
+    def fetch_images(self, num_conns=10, urls=None):
+        if urls:
+            srcs = urls
+        else:
+            srcs = set()
+            for img in self.tree.xpath('//img'):
+                # FIXME: thumbnail and hires images are fetched, only fetch hires if available.
+                # if fetch error for hires occurs fallback to low res
+                for src in [img.attrib.get('hiressrc'), img.attrib.get('src')]:
+                    if src:
+                        srcs.add(src.strip())
 
         def fetch(src):
             url = urlparse.urljoin(self.url, src)
@@ -250,21 +253,22 @@ def coll_from_zip(basedir, env):
         html = data['text']['*']
         html = '<div id="content"><h2>%s</h2>\n\n%s</div>' % (title.encode('utf-8'), html.encode('utf-8'))
 
-        wp = WebPage(coll, title, url) # images
+        wp = WebPage(coll, title, url, user_agent='Mozilla/5.0') # images
         open(wp.get_path('content.orig'), 'wb').write(html)
         wp.tree = wp._get_parse_tree(html)
-
+        missing_images = set()
         for img in wp.tree.xpath('.//img/@src'):
             frags = img.split('/')
             if len(frags):
-                scaled = frags[-1]
                 title = frags[-2]
-                if os.path.splitext(title)[0] in scaled:
-                    title = urlparse.unquote(title.encode('utf-8')).decode('utf-8')
-                    fn = item.wiki.env.images.getDiskPath(title)
-                    if fn:
-                        wp.images[img] = fn
-
+                title = urlparse.unquote(title.encode('utf-8')).decode('utf-8')
+                fn = item.wiki.env.images.getDiskPath(title)
+                if fn:
+                    wp.images[img] = fn
+                else:
+                    missing_images.add(img)
+        if missing_images:
+            wp.fetch_images(urls=missing_images)
         coll.outline.append(wp)
 
     return coll
