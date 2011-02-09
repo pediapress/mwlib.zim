@@ -70,51 +70,56 @@ class ZIPArticleSource(pyzim.IterArticleSource):
         article = self.aid2article[aid]
         if article.namespace == 'A':
             webpage = self.aid2article[aid].webpage
-            root = webpage.tree
-            self.rewrite_links(root, webpage.url)
-            self.rewrite_css_links(root, webpage.url)
-            self.rewrite_img_srcs(root, webpage.url)
-            self.clean_tree(root)
-            return etree.tostring(root)
+            self.rewrite_links(webpage)
+            self.rewrite_css_links(webpage)
+            self.rewrite_img_srcs(webpage)
+            self.removeNodesCustom(webpage)
+            return etree.tostring(webpage.tree)
         elif article.namespace in ['I', '-']:
             fn = self.aid2article[aid].filename
             return open(fn, 'rb').read()
 
-    def rewrite_links(self, root, articleurl):
-        for a in root.xpath('//a[@title]'):
+    def rewrite_links(self, webpage):
+        for a in webpage.tree.xpath('//a[@title]'):
             title = a.attrib['title']
             aid = title # FIXME
             if aid in self.aid2article:
                 a.attrib['href'] = '/A/{0}'.format(title)
             else:
-                a.attrib['href'] = urlparse.urljoin(articleurl, a.attrib['href'])
+                a.attrib['href'] = urlparse.urljoin(webpage.url, a.attrib['href'])
 
-    def rewrite_css_links(self, root, articleurl):
-        for link in root.xpath('//link'):
+    def rewrite_css_links(self, webpage):
+        for link in webpage.tree.xpath('//link'):
             href = link.attrib['href']
             aid = src2aid(href)
             if aid in self.aid2article:
                 link.attrib['href'] = '/-/{0}'.format(aid)
             else:
-                link.attrib['href'] = urlparse.urljoin(articleurl, link.attrib['href'])
+                link.attrib['href'] = urlparse.urljoin(webpage.url, link.attrib['href'])
 
 
 
-    def rewrite_img_srcs(self, root, articleurl):
-        for img in root.xpath('//img'):
+    def rewrite_img_srcs(self, webpage):
+        for img in webpage.tree.xpath('//img'):
             src = img.attrib['src']
             aid = src2aid(src)
             if aid in self.aid2article:
                 img.attrib['src'] = '/I/{0}'.format(aid)
             else:
-                img.attrib['src'] = urlparse.urljoin(articleurl, src)
+                img.attrib['src'] = urlparse.urljoin(webpage.url, src)
                 #img.attrib['src'] = ''
 
-    def clean_tree(self, root):
-        for node in root.xpath('//*[contains(@class, "editsection")]'):
-            p = node.getparent()
-            if p is not None:
-                p.remove(node)
+    def removeNodesCustom(self, webpage):
+        queries = webpage.config('remove', [])
+        for klass in webpage.config('remove_class', []):
+            queries.append('.//*[contains(@class, "{0}")]'.format(klass))
+        for id in webpage.config('remove_id', []):
+            queries.append('.//*[contains(@id, "{0}")]'.format(id))
+        for query in queries:
+            for node in webpage.tree.xpath(query):
+                p = node.getparent()
+                if len(p):
+                    p.remove(node)
 
 
 def writer(env, output,
