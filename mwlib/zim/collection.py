@@ -10,6 +10,7 @@ import os
 import re
 import urllib2
 import urlparse
+import shutil
 
 from gevent.pool import Pool
 import simplejson as json
@@ -104,6 +105,26 @@ class WebPage(object):
                 hires_path = img.xpath(path_query, namespaces={'re':regexpNS}).strip()
                 img.set('hiressrc', hires_path)
 
+    def handleCss(self, article):
+        css_fn = 'wp.css' # FIXME make this configurable
+
+        css_path_orig = os.path.join(os.path.dirname(__file__), css_fn)
+        css_path = self.get_path(css_fn)
+
+        shutil.copy(css_path_orig, css_path)
+        self.css_path = css_path
+
+        link = etree.Element('link',
+                            rel='stylesheet',
+                            href=self.css_path,
+                            type='text/css')
+
+        head = article.xpath('//head')
+        if not head:
+            head = etree.Element('head')
+            article.insert(0, head)
+        head.append(link)
+
     def _get_parse_tree(self, data=None):
         if not data:
             data = open(self.get_path('content.orig')).read()
@@ -113,6 +134,9 @@ class WebPage(object):
         content = root.xpath(content_filter)
         art = etree.Element('article')
         art.extend(content)
+
+        self.handleCss(art)
+
         self._add_hires_img_src(art)
         return art
 

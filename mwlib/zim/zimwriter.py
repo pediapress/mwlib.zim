@@ -56,16 +56,27 @@ class ZIPArticleSource(pyzim.IterArticleSource):
                 self.aid2article[aid] = img
                 yield img
 
+            if webpage.css_path:
+                aid = src2aid(webpage.css_path)
+                title = aid # TODO
+                url = aid
+                mimetype = 'text/css'
+                css = pyzim.Article(title, aid=aid, url=url, mimetype=mimetype, namespace='-')
+                css.filename = webpage.css_path
+                self.aid2article[aid] = css
+                yield css
+
     def get_data(self, aid):
         article = self.aid2article[aid]
         if article.namespace == 'A':
             webpage = self.aid2article[aid].webpage
             root = webpage.tree
             self.rewrite_links(root, webpage.url)
+            self.rewrite_css_links(root, webpage.url)
             self.rewrite_img_srcs(root, webpage.url)
             self.clean_tree(root)
             return etree.tostring(root)
-        elif article.namespace == 'I':
+        elif article.namespace in ['I', '-']:
             fn = self.aid2article[aid].filename
             return open(fn, 'rb').read()
 
@@ -78,6 +89,17 @@ class ZIPArticleSource(pyzim.IterArticleSource):
             else:
                 a.attrib['href'] = urlparse.urljoin(articleurl, a.attrib['href'])
 
+    def rewrite_css_links(self, root, articleurl):
+        for link in root.xpath('//link'):
+            href = link.attrib['href']
+            aid = src2aid(href)
+            if aid in self.aid2article:
+                link.attrib['href'] = '/-/{0}'.format(aid)
+            else:
+                link.attrib['href'] = urlparse.urljoin(articleurl, link.attrib['href'])
+
+
+
     def rewrite_img_srcs(self, root, articleurl):
         for img in root.xpath('//img'):
             src = img.attrib['src']
@@ -86,6 +108,7 @@ class ZIPArticleSource(pyzim.IterArticleSource):
                 img.attrib['src'] = '/I/{0}'.format(aid)
             else:
                 img.attrib['src'] = urlparse.urljoin(articleurl, src)
+                #img.attrib['src'] = ''
 
     def clean_tree(self, root):
         for node in root.xpath('//*[contains(@class, "editsection")]'):
