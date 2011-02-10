@@ -1,8 +1,8 @@
 #! /usr/bin/env python
 #! -*- coding:utf-8 -*-
 
-from gevent import monkey
-monkey.patch_all()
+# from gevent import monkey
+# monkey.patch_all()
 
 from hashlib import sha1
 from lxml import etree
@@ -12,7 +12,7 @@ import urllib2
 import urlparse
 import shutil
 
-from gevent.pool import Pool
+#from gevent.pool import Pool
 import simplejson as json
 
 from mwlib.zim.siteconfig import SiteConfigHandler
@@ -171,8 +171,11 @@ class WebPage(object):
                 return
             open(filename, 'w').write(data)
 
-        pool = Pool(num_conns)
-        pool.map(fetch, srcs)
+        while srcs:
+            fetch(srcs.pop())
+
+        # pool = Pool(num_conns)
+        # pool.map(fetch, srcs)
 
     def config(self, key, default=None):
         return self.coll.siteconfig.get(self.url, key, default=default)

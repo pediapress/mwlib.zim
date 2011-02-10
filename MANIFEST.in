@@ -1,3 +1,4 @@
+include MANIFEST.in
 include README.txt
 include mwlib/__init__.py
 include mwlib/zim/__init__.py
