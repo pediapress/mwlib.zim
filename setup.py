@@ -20,7 +20,9 @@ def read_long_description():
     return open(fn).read()
 
 def main():
-    
+    if os.path.exists(distutils.util.convert_path('Makefile')):
+        print 'Running make'
+        os.system('make')
     setup(
         name="mwlib.zim",
         version=str(version),
