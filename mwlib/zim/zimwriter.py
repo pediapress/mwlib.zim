@@ -4,6 +4,8 @@
 # Copyright (c) 2011, PediaPress GmbH
 # See README.txt for additional licensing information.
 
+from __future__ import division
+
 from hashlib import sha1
 import mimetypes
 import os
@@ -24,17 +26,21 @@ def src2aid(src):
 
 
 class ZIPArticleSource(pyzim.IterArticleSource):
-    def __init__(self, zipfn):
+    def __init__(self, zipfn, status_callback):
         self.tmpdir = tempfile.mkdtemp()
         self.coll = coll_from_zip(self.tmpdir, zipfn)
         self.aid2article = {}
+        self.status_callback = status_callback
 
     def __del__(self):
         if os.path.exists(self.tmpdir):
             shutil.rmtree(self.tmpdir)
 
     def __iter__(self):
-        for lvl, webpage in self.coll.outline.walk(cls=WebPage):
+        num_items = len(self.coll.outline.items)
+        for n, (lvl, webpage) in enumerate(self.coll.outline.walk(cls=WebPage)):
+            if self.status_callback:
+                self.status_callback(progress=n/num_items)
             title = webpage.title
             # slashes in the title break correct display in kiwix.
             # don't know if this is a bug in any of the writers or in the reader...
@@ -125,8 +131,10 @@ class ZIPArticleSource(pyzim.IterArticleSource):
 def writer(env, output,
            status_callback=None,
            ):
+    if status_callback:
+        status_callback(status='generating zimfile')
     print 'STARTING'
-    src = ZIPArticleSource(env)
+    src = ZIPArticleSource(env, status_callback)
     print 'INITIALIZED'
     src.create(output)
     print 'FINISHED CREATING ZIM FILE'
