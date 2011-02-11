@@ -131,7 +131,10 @@ class WebPage(object):
         data = unicode(data, 'utf-8', 'ignore') # FIXME: get the correct encoding!
         root = etree.HTML(data) # FIXME: base_url?
         content_filter = self.config('content')
-        content = root.xpath(content_filter)
+        if content_filter:
+            content = root.xpath(content_filter)
+        else:
+            content = root
         art = etree.Element('article')
         art.extend(content)
 
