@@ -86,8 +86,8 @@ class ZIPArticleSource(pyzim.IterArticleSource):
             return open(fn, 'rb').read()
 
     def rewrite_links(self, webpage):
-        for a in webpage.tree.xpath('//a[@title]'):
-            title = a.attrib['title']
+        for a in webpage.tree.xpath('//a'):
+            title = a.attrib.get('title') or None
             aid = title # FIXME
             if aid in self.aid2article:
                 a.attrib['href'] = '/A/{0}'.format(title)
