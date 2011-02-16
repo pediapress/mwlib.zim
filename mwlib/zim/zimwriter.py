@@ -80,7 +80,12 @@ class ZIPArticleSource(pyzim.IterArticleSource):
             self.rewrite_css_links(webpage)
             self.rewrite_img_srcs(webpage)
             self.removeNodesCustom(webpage)
-            return etree.tostring(webpage.tree)
+	    self.setTitle(webpage)
+	    html = etree.tostring(webpage.tree)
+	    # print '#'*40
+	    # print html
+	    # print '-'*40
+            return html
         elif article.namespace in ['I', '-']:
             fn = self.aid2article[aid].filename
             return open(fn, 'rb').read()
@@ -127,6 +132,14 @@ class ZIPArticleSource(pyzim.IterArticleSource):
                 if len(p):
                     p.remove(node)
 
+
+    def setTitle(self, webpage):
+	title_node = webpage.tree.find('.//title')
+	if not title_node:
+	    title_node = etree.Element('title')
+	title_node.text = webpage.title
+	head_node = webpage.tree.find('.//head')
+	head_node.append(title_node)
 
 def writer(env, output,
            status_callback=None,
