@@ -304,3 +304,12 @@ def coll_from_zip(basedir, env):
         coll.outline.append(wp)
 
     return coll
+
+if __name__ == '__main__':
+
+    import sys
+    zip_fn = sys.argv[1]
+    col_base_dir = sys.argv[2]
+    coll = coll_from_zip(col_base_dir, zip_fn)
+    coll.dump()
+    print 'converted zip to coll'
