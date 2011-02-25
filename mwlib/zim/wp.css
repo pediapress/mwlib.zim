@@ -10,25 +10,16 @@ body {
 	font-family: sans-serif;
 	font-size: 1em;
 }
-body {
-	background-color: #f3f3f3;
-	background-image: url(images/page-base.png?1);
-}
 /* Content */
 #content {
-	margin-left: 10em;
 	padding: 1em;
-	background-image: url(images/border.png?1);
 	background-position: top left;
-	background-repeat: repeat-y;
-	background-color: white;
 	color: black;
 }
 /* Head */
 #mw-page-base {
 	height: 5em;
 	background-color: white;
-	background-image: url(images/page-fade.png?1);
 	background-position: bottom left;
 	background-repeat: repeat-x;
 }
@@ -36,7 +27,6 @@ body {
 	margin-top: -5em;
 	margin-left: 10em;
 	height: 5em;
-	background-image: url(images/border.png?1);
 	background-position: bottom left;
 	background-repeat: repeat-x;
 }
@@ -103,7 +93,6 @@ div#mw-head h5 {
 		height: 2.5em;
 	}
 	div.vectorTabs {
-		background-image: url(images/tab-break.png?1);
 		background-position: bottom left;
 		background-repeat: no-repeat;
 		padding-left: 1px;
@@ -130,7 +119,6 @@ div#mw-head h5 {
 		margin: 0;
 		padding: 0;
 		background-color: #f3f3f3;
-		background-image: url(images/tab-normal-fade.png?1);
 		background-position: bottom left;
 		background-repeat: repeat-x;
 		white-space:nowrap;
@@ -140,7 +128,6 @@ div#mw-head h5 {
 		display: block;
 	}
 	div.vectorTabs li.selected {
-		background-image: url(images/tab-current-fade.png?1);
 	}
 	/* OVERRIDDEN BY COMPLIANT BROWSERS */
 	div.vectorTabs li a {
@@ -148,7 +135,6 @@ div#mw-head h5 {
 		height: 2.5em;
 		padding-left: 0.4em;
 		padding-right: 0.4em;
-		background-image: url(images/tab-break.png?1);
 		background-position: bottom right;
 		background-repeat: no-repeat;
 	}
@@ -193,7 +179,6 @@ div#mw-head h5 {
 	div.vectorMenu {
 		direction: ltr;
 		float: left;
-		background-image: url(images/arrow-down-icon.png?1);
 		background-position: 100% 60%;
 		background-repeat: no-repeat;
 		cursor: pointer;
@@ -206,13 +191,9 @@ div#mw-head h5 {
 	/* @noflip */
 	div#mw-head div.vectorMenu h5 {
 		float: left;
-		background-image: url(images/tab-break.png?1);
 		background-repeat: no-repeat;
 	}
 	/* IGNORED BY IE6 */
-	div#mw-head div.vectorMenu > h5 {
-		background-image: none;
-	}
 	div#mw-head div.vectorMenu h5 {
 		background-position: bottom left;
 		margin-left: -1px;
@@ -233,7 +214,6 @@ div#mw-head h5 {
 		width: 24px;
 		height: 2.5em;
 		text-decoration: none;
-		background-image: url(images/tab-break.png?1);
 		background-repeat: no-repeat;
 	}
 	div.vectorMenu h5 a{
@@ -341,7 +321,6 @@ div#mw-head h5 {
 		min-height: 1px; /* Gotta trigger hasLayout for IE7 */
 		border: solid 1px #AAAAAA;
 		background-color: white;
-		background-image: url(images/search-fade.png?1);
 		background-position: top left;
 		background-repeat: repeat-x;
 	}
@@ -404,7 +383,6 @@ div#mw-panel {
 		margin: 0;
 		padding-top: 0.5em;
 		margin-left: 1.25em;
-		background-image: url(images/portal-break.png?1);
 		background-repeat: no-repeat;
 		background-position: top left;
 	}
@@ -434,7 +412,6 @@ div#mw-panel {
 	margin-left: 10em;
 	margin-top: 0;
 	padding: 0.75em;
-	background-image: url(images/border.png?1);
 	background-position: top left;
 	background-repeat: repeat-x;
 }
@@ -505,7 +482,6 @@ body.ltr #footer #footer-places {
 	clear: both;
 	margin: 0 !important;
 	padding: 0 !important;
-	background-image: url(images/preferences-break.png?1);
 	background-position: bottom left;
 	background-repeat: no-repeat;
 }
@@ -519,7 +495,6 @@ body.ltr #footer #footer-places {
 		white-space: nowrap;
 		list-style-type: none;
 		list-style-image: none;
-		background-image: url(images/preferences-break.png?1);
 		background-position: bottom right;
 		background-repeat: no-repeat;
 	}
@@ -534,14 +509,12 @@ body.ltr #footer #footer-places {
 		color: #0645ad;
 		padding: 0.5em;
 		text-decoration: none;
-		background-image: none;
 		font-size: 0.9em;
 	}
 	#preftoc a:hover {
 		text-decoration: underline;
 	}
 	#preftoc li.selected a {
-		background-image: url(images/preferences-fade.png?1);
 		background-position: bottom;
 		background-repeat: repeat-x;
 		color: #333333;
@@ -555,7 +528,6 @@ body.ltr #footer #footer-places {
 	clear: both;
 	border: solid 1px #cccccc;
 	background-color: #f9f9f9;
-	background-image: url(images/preferences-base.png?1);
 }
 #preferences fieldset.prefsection {
 	border: none;
@@ -1099,34 +1071,10 @@ div#bodyContent {
 	height: 2.5em;
 }
 #ca-unwatch.icon a {
-	background-image: url(images/watch-icons.png?1);
 	background-position: -43px 60%;
 }
 #ca-watch.icon a {
-	background-image: url(images/watch-icons.png?1);
 	background-position: 5px 60%;
-}
-#ca-unwatch.icon a:hover {
-	background-image: url(images/watch-icons.png?1);
-	background-position: -67px 60%;
-}
-#ca-watch.icon a:hover {
-	background-image: url(images/watch-icons.png?1);
-	background-position: -19px 60%;
-}
-#ca-unwatch.icon a.loading,
-#ca-watch.icon a.loading {
-	background-image: url(images/watch-icon-loading.gif?1);
-	background-position: center 60%;
-}
-#ca-unwatch.icon a span,
-#ca-watch.icon a span {
-	display: none;
-}
-div.vectorTabs ul {
-	background-image:url(images/tab-break.png?1);
-	background-position:right bottom;
-	background-repeat:no-repeat;
 }
 
 /* Source of the css fragment:
@@ -1948,36 +1896,6 @@ td.mw-enhanced-rc {
 	margin-right: 0.5em;
 }
  
-.mw-remove-category {
-	padding: 8px;
-	background-image: url(images/remove.png);
-	background-position: center center;
-	background-repeat: no-repeat;
-}
- 
-.mw-ajax-addcategory {
-	padding-left: 20px;
-	background-image: url(images/add.png);
-	background-position: left center;
-	background-repeat: no-repeat;
-}
-
-.mw-ajax-loader {
-	background-image: url(images/ajax-loader.gif);
-	background-position: center center;
-	background-repeat: no-repeat;
-	padding: 16px;
-	position: relative;
-	top: -16px;
-}
-
-.mw-small-spinner {
-	padding: 10px !important;
-	margin-right: 0.6em;
-	background-image: url(images/spinner.gif);
-	background-position: center center;
-	background-repeat: no-repeat;
-}
 
 /* Sort arrows added by SortableTables */
 a.sortheader {
