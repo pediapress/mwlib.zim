@@ -273,7 +273,7 @@ def coll_from_zip(basedir, env):
         env = wiki.makewiki(env)
         
     coll = Collection(basedir=basedir)
-
+    missing_images = []
     for item in env.metabook.walk():
         title = item.title
         url = item.wiki.getURL(title, item.revision)
@@ -286,19 +286,21 @@ def coll_from_zip(basedir, env):
         wp = WebPage(coll, title, url, user_agent='Mozilla/5.0') # images
         open(wp.get_path('content.orig'), 'wb').write(html)
         wp.tree = wp._get_parse_tree(html)
-        missing_images = set()
-        for img in wp.tree.xpath('.//img/@src'):
-            frags = img.split('/')
+
+        for src in wp.tree.xpath('.//img/@src'):
+            frags = src.split('/')
             if len(frags):
-                title = frags[-2]
-                title = urlparse.unquote(title.encode('utf-8')).decode('utf-8')
-                fn = item.wiki.env.images.getDiskPath(title)
-                if fn:
-                    wp.images[img] = fn
-                else:
-                    missing_images.add(img)
-        if missing_images:
-            wp.fetch_images(urls=missing_images)
+                fn = None
+                for title in [frags[-2], frags[-1]]:
+                    title = urlparse.unquote(title.encode('utf-8')).decode('utf-8')
+                    fn = item.wiki.env.images.getDiskPath(title)
+                    if fn:
+                        wp.images[src] = fn
+                        break
+                if not fn and title not in missing_images:
+                    print 'image not found', src
+                    missing_images.append(title)
+
         coll.outline.append(wp)
 
     return coll

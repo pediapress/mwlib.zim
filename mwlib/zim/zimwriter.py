@@ -41,17 +41,15 @@ class ZIPArticleSource(pyzim.IterArticleSource):
         for n, (lvl, webpage) in enumerate(self.coll.outline.walk(cls=WebPage)):
             if self.status_callback:
                 self.status_callback(progress=n/num_items)
-            title = webpage.title
-            # slashes in the title break correct display in kiwix.
-            # don't know if this is a bug in any of the writers or in the reader...
-            title = title.replace('/', '')
+	    title = webpage.title
+	    title = title.encode('utf-8')
+            title = title.replace('/', '') # workaround for bug in kiwix < 0.9 alpha8
             aid = title # webpage.id FIXME
             url = aid # FIXME
             article = pyzim.Article(title, aid=aid, url=url, mimetype='text/html', namespace='A')
             article.webpage = webpage
             self.aid2article[aid] = article
-            yield article
-
+	    yield article
             for src, fn in webpage.images.items():
                 aid = src2aid(src)
                 title = aid # TODO
@@ -82,9 +80,6 @@ class ZIPArticleSource(pyzim.IterArticleSource):
             self.removeNodesCustom(webpage)
 	    self.setTitle(webpage)
 	    html = etree.tostring(webpage.tree)
-	    # print '#'*40
-	    # print html
-	    # print '-'*40
             return html
         elif article.namespace in ['I', '-']:
             fn = self.aid2article[aid].filename
