@@ -41,15 +41,16 @@ class ZIPArticleSource(pyzim.IterArticleSource):
         for n, (lvl, webpage) in enumerate(self.coll.outline.walk(cls=WebPage)):
             if self.status_callback:
                 self.status_callback(progress=n/num_items)
-	    title = webpage.title
-	    title = title.encode('utf-8')
+            title = webpage.title
+            title = title.encode('utf-8')
             title = title.replace('/', '') # workaround for bug in kiwix < 0.9 alpha8
             aid = title # webpage.id FIXME
             url = aid # FIXME
             article = pyzim.Article(title, aid=aid, url=url, mimetype='text/html', namespace='A')
             article.webpage = webpage
+            webpage.aid = aid
             self.aid2article[aid] = article
-	    yield article
+            yield article
             for src, fn in webpage.images.items():
                 aid = src2aid(src)
                 title = aid # TODO
@@ -78,8 +79,8 @@ class ZIPArticleSource(pyzim.IterArticleSource):
             self.rewrite_css_links(webpage)
             self.rewrite_img_srcs(webpage)
             self.removeNodesCustom(webpage)
-	    self.setTitle(webpage)
-	    html = etree.tostring(webpage.tree)
+            self.setTitle(webpage)
+            html = etree.tostring(webpage.tree)
             return html
         elif article.namespace in ['I', '-']:
             fn = self.aid2article[aid].filename
@@ -89,10 +90,13 @@ class ZIPArticleSource(pyzim.IterArticleSource):
         for a in webpage.tree.xpath('//a'):
             title = a.attrib.get('title') or None
             aid = title # FIXME
+            href = a.get('href')
             if aid in self.aid2article:
                 a.attrib['href'] = '/A/{0}'.format(title)
+            elif href.startswith('#'):
+                a.attrib['href'] = '/A/{0}{1}'.format(webpage.aid, href)
             else:
-                a.attrib['href'] = urlparse.urljoin(webpage.url, a.attrib['href'])
+                a.attrib['href'] = urlparse.urljoin(webpage.url, href)
 
     def rewrite_css_links(self, webpage):
         for link in webpage.tree.xpath('//link'):
@@ -102,8 +106,6 @@ class ZIPArticleSource(pyzim.IterArticleSource):
                 link.attrib['href'] = '/-/{0}'.format(aid)
             else:
                 link.attrib['href'] = urlparse.urljoin(webpage.url, link.attrib['href'])
-
-
 
     def rewrite_img_srcs(self, webpage):
         for img in webpage.tree.xpath('//img'):
@@ -129,12 +131,12 @@ class ZIPArticleSource(pyzim.IterArticleSource):
 
 
     def setTitle(self, webpage):
-	title_node = webpage.tree.find('.//title')
-	if not title_node:
-	    title_node = etree.Element('title')
-	title_node.text = webpage.title
-	head_node = webpage.tree.find('.//head')
-	head_node.append(title_node)
+        title_node = webpage.tree.find('.//title')
+        if not title_node:
+            title_node = etree.Element('title')
+        title_node.text = webpage.title
+        head_node = webpage.tree.find('.//head')
+        head_node.append(title_node)
 
 def writer(env, output,
            status_callback=None,
