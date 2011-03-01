@@ -275,6 +275,8 @@ def coll_from_zip(basedir, env):
     coll = Collection(basedir=basedir)
     missing_images = []
     for item in env.metabook.walk():
+        if item.type == 'chapter':
+            continue
         title = item.title
         url = item.wiki.getURL(title, item.revision)
 
