@@ -12,6 +12,8 @@ import os
 import shutil
 import tempfile
 import urlparse
+import urllib
+
 
 from lxml import etree
 
@@ -92,11 +94,13 @@ class ZIPArticleSource(pyzim.IterArticleSource):
             aid = title # FIXME
             href = a.get('href')
             if aid in self.aid2article:
-                a.attrib['href'] = '/A/{0}'.format(title)
+                url = '/A/{0}'.format(title)
             elif href.startswith('#'):
-                a.attrib['href'] = '/A/{0}{1}'.format(webpage.aid, href)
+                url = '/A/{0}{1}'.format(webpage.aid, href)
             else:
-                a.attrib['href'] = urlparse.urljoin(webpage.url, href)
+                url = urlparse.urljoin(webpage.url.encode('utf-8'), href)
+            a.attrib['href'] = urllib.quote(url)
+
 
     def rewrite_css_links(self, webpage):
         for link in webpage.tree.xpath('//link'):
