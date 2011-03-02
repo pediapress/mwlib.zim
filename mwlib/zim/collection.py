@@ -268,10 +268,10 @@ class Collection(object):
 
 def coll_from_zip(basedir, env):
 
-    if isinstance(env, basestring):       
+    if isinstance(env, basestring):
         from mwlib import wiki
         env = wiki.makewiki(env)
-        
+
     coll = Collection(basedir=basedir)
     missing_images = []
     for item in env.metabook.walk():
@@ -279,9 +279,7 @@ def coll_from_zip(basedir, env):
             continue
         title = item.title
         url = item.wiki.getURL(title, item.revision)
-
-        data = item.wiki.getHTML(title)
-
+        data = item.wiki.getHTML(title, item.revision)
         html = data['text']['*']
         html = '<div id="content"><h2>%s</h2>\n\n%s</div>' % (title.encode('utf-8'), html.encode('utf-8'))
 
