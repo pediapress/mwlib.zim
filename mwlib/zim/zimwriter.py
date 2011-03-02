@@ -144,6 +144,7 @@ class ZIPArticleSource(pyzim.IterArticleSource):
 
 def writer(env, output,
            status_callback=None,
+           lang=None,
            ):
     if status_callback:
         status_callback(status='generating zimfile')
@@ -156,3 +157,11 @@ def writer(env, output,
 writer.description = 'ZIM Files'
 writer.content_type = 'application/zim' # FIXME: verify/correct
 writer.file_extension = 'zim'
+
+writer.options = {
+    'lang': {
+        'param': 'LANGUAGE',
+        'help': 'use translated strings in given language (defaults to "en" for English)',
+    },
+}
+
