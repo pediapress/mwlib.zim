@@ -26,12 +26,17 @@ import pyzim
 def src2aid(src):
     return sha1(src).hexdigest()
 
+def clean_url(url):
+    return urlparse.urlunsplit([urllib.quote(urllib.unquote(frag), safe='/=&+')
+                                for frag in urlparse.urlsplit(url)])
+
 
 class ZIPArticleSource(pyzim.IterArticleSource):
     def __init__(self, zipfn, status_callback):
         self.tmpdir = tempfile.mkdtemp()
         self.coll = coll_from_zip(self.tmpdir, zipfn)
         self.aid2article = {}
+        self.url2article = {}
         self.status_callback = status_callback
 
     def __del__(self):
@@ -52,6 +57,7 @@ class ZIPArticleSource(pyzim.IterArticleSource):
             article.webpage = webpage
             webpage.aid = aid
             self.aid2article[aid] = article
+            self.url2article[clean_url(webpage.canonical_url.encode('utf-8'))] = article
             yield article
             for src, fn in webpage.images.items():
                 aid = src2aid(src)
@@ -90,21 +96,16 @@ class ZIPArticleSource(pyzim.IterArticleSource):
 
     def rewrite_links(self, webpage):
         for a in webpage.tree.xpath('//a'):
-            title = a.attrib.get('title') or None
-            aid = title # FIXME
             href = a.get('href')
-            if aid in self.aid2article:
-                url = '/A/{0}'.format(title)
-            elif href.startswith('#'):
-                url = '/A/{0}{1}'.format(webpage.aid, href)
+            if href.startswith('#'):
+                target = '/A/{0}{1}'.format(clean_url(webpage.aid), clean_url(href))
             else:
-                url = urlparse.urljoin(webpage.url.encode('utf-8'), href)
-
-            url = urlparse.urlunsplit([urllib.quote(urllib.unquote(frag), safe='/=&+')
-                                       for frag in urlparse.urlsplit(url)])
-
-            a.attrib['href'] = url
-
+                url = clean_url(urlparse.urljoin(webpage.url.encode('utf-8'), href))
+                if url in self.url2article:
+                    target = '/A/{0}'.format(clean_url(self.url2article[url].aid))
+                else:
+                    target = url
+            a.attrib['href'] = target
 
     def rewrite_css_links(self, webpage):
         for link in webpage.tree.xpath('//link'):
