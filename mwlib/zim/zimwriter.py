@@ -47,7 +47,7 @@ class ZIPArticleSource(pyzim.IterArticleSource):
         num_items = len(self.coll.outline.items)
         for n, (lvl, webpage) in enumerate(self.coll.outline.walk(cls=WebPage)):
             if self.status_callback:
-                self.status_callback(progress=n/num_items)
+                self.status_callback(progress=100*n/num_items)
             title = webpage.title
             title = title.encode('utf-8')
             title = title.replace('/', '') # workaround for bug in kiwix < 0.9 alpha8
