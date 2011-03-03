@@ -99,7 +99,11 @@ class ZIPArticleSource(pyzim.IterArticleSource):
                 url = '/A/{0}{1}'.format(webpage.aid, href)
             else:
                 url = urlparse.urljoin(webpage.url.encode('utf-8'), href)
-            a.attrib['href'] = urllib.quote(url)
+
+            url = urlparse.urlunsplit([urllib.quote(urllib.unquote(frag), safe='/=&+')
+                                       for frag in urlparse.urlsplit(url)])
+
+            a.attrib['href'] = url
 
 
     def rewrite_css_links(self, webpage):
