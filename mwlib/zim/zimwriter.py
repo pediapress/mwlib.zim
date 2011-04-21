@@ -18,6 +18,8 @@ import urllib
 from lxml import etree
 
 from mwlib.zim.collection import WebPage, coll_from_zip
+from mwlib.zim.setmainpage import set_main_page
+
 import pyzim
 
 
@@ -38,13 +40,36 @@ class ZIPArticleSource(pyzim.IterArticleSource):
         self.aid2article = {}
         self.url2article = {}
         self.status_callback = status_callback
+        self.main_page_name = 'Table of Contents'
+
 
     def __del__(self):
         if os.path.exists(self.tmpdir):
             shutil.rmtree(self.tmpdir)
 
+    def dump_toc(self, coll):
+        title = self.main_page_name
+        article = pyzim.Article(title, aid=title, url=title, mimetype='text/html', namespace='A')
+
+        w = WebPage(coll=coll, title=title, url='')
+        html = ['<div id="content">', '<h2>%s</h2>' % self.main_page_name, '<ul>']
+
+        for lvl, webpage in coll.outline.walk(cls=WebPage):
+            url = clean_url(webpage.canonical_url.encode('utf-8'))
+            html.append('<li><a href="%s">%s</a></li>' % (url, webpage.title.encode('utf-8')))
+
+        html.extend(['</ul>', '</div>'])
+        html = ''.join(html)
+        html += ' '*1000 # kiwix is broken and skips a certain amount of content
+        w.tree = w._get_parse_tree(html)
+        article.webpage = w
+        return (article, title)
+
     def __iter__(self):
         num_items = len(self.coll.outline.items)
+        article, aid =  self.dump_toc(self.coll)
+        self.aid2article[aid] = article
+        yield article
         for n, (lvl, webpage) in enumerate(self.coll.outline.walk(cls=WebPage)):
             if self.status_callback:
                 self.status_callback(progress=100*n/num_items)
@@ -158,6 +183,8 @@ def writer(env, output,
     print 'INITIALIZED'
     src.create(output)
     print 'FINISHED CREATING ZIM FILE'
+    set_main_page(output, src.main_page_name)
+    print 'SET MAIN PAGE'
 
 writer.description = 'ZIM Files'
 writer.content_type = 'application/zim' # FIXME: verify/correct
