@@ -280,7 +280,11 @@ def coll_from_zip(basedir, env):
         title = item.title
         url = item.wiki.getURL(title, item.revision)
         data = item.wiki.getHTML(title, item.revision)
-        html = data['text']['*']
+        try:
+            html = data['text']['*']
+        except KeyError:
+            print 'article %r has no html' % title
+            continue
         html = '<div id="content"><h2>%s</h2>\n\n%s</div>' % (title.encode('utf-8'), html.encode('utf-8'))
 
         wp = WebPage(coll, title, url, user_agent='Mozilla/5.0') # images
