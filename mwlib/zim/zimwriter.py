@@ -52,7 +52,7 @@ class ZIPArticleSource(pyzim.IterArticleSource):
         article = pyzim.Article(title, aid=title, url=title, mimetype='text/html', namespace='A')
 
         w = WebPage(coll=coll, title=title, url='')
-        html = ['<div id="content">', '<h2>%s</h2>' % self.main_page_name, '<ul>']
+        html = ['<div id="content">', '<h2 style="font-family:sans-serif;">%s</h2>' % self.main_page_name, '<ul style="font-family:sans-serif;">']
 
         for lvl, webpage in coll.outline.walk(cls=WebPage):
             url = clean_url(webpage.canonical_url.encode('utf-8'))
