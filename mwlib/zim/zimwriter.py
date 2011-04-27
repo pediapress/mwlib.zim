@@ -97,10 +97,10 @@ class ZIPArticleSource(pyzim.IterArticleSource):
             yield article
             for src, fn in webpage.images.items():
                 aid = src2aid(src)
-                title = aid # TODO
-                url = aid
+                if aid in self.aid2article:
+                    continue
                 mimetype = mimetypes.guess_type(fn)[0]
-                img = pyzim.Article(title, aid=aid, url=url, mimetype=mimetype, namespace='I')
+                img = pyzim.Article(aid, aid=aid, url=aid, mimetype=mimetype, namespace='I')
                 img.filename = fn
                 self.aid2article[aid] = img
                 yield img
