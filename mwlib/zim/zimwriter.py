@@ -29,6 +29,8 @@ def src2aid(src):
     return sha1(src).hexdigest()
 
 def clean_url(url):
+    if isinstance(url, unicode):
+        url = url.encode('utf-8')
     return urlparse.urlunsplit([urllib.quote(urllib.unquote(frag), safe='/=&+')
                                 for frag in urlparse.urlsplit(url)])
 
