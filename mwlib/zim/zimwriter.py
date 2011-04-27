@@ -47,14 +47,14 @@ class ZIPArticleSource(pyzim.IterArticleSource):
         if os.path.exists(self.tmpdir):
             shutil.rmtree(self.tmpdir)
 
-    def dump_toc(self, coll):
+    def dump_toc(self):
         title = self.main_page_name
         article = pyzim.Article(title, aid=title, url=title, mimetype='text/html', namespace='A')
 
-        w = WebPage(coll=coll, title=title, url='')
+        w = WebPage(coll=self.coll, title=title, url='')
         html = ['<div id="content">', '<h2 style="font-family:sans-serif;">%s</h2>' % self.main_page_name, '<ul style="font-family:sans-serif;">']
 
-        for lvl, webpage in coll.outline.walk(cls=WebPage):
+        for lvl, webpage in self.coll.outline.walk(cls=WebPage):
             url = clean_url(webpage.canonical_url.encode('utf-8'))
             html.append('<li><a href="%s">%s</a></li>' % (url, webpage.title.encode('utf-8')))
 
@@ -63,7 +63,8 @@ class ZIPArticleSource(pyzim.IterArticleSource):
         html += ' '*1000 # kiwix is broken and skips a certain amount of content
         w.tree = w._get_parse_tree(html)
         article.webpage = w
-        return (article, title)
+        self.aid2article[title] = article
+        return article
 
     def add_css(self):
         css_path = self.coll.outline.items[0].css_path
@@ -77,10 +78,7 @@ class ZIPArticleSource(pyzim.IterArticleSource):
     def __iter__(self):
         num_items = len(self.coll.outline.items)
 
-        article, aid =  self.dump_toc(self.coll)
-        self.aid2article[aid] = article
-        yield article
-
+        yield self.dump_toc()
         yield self.add_css()
 
         for n, (lvl, webpage) in enumerate(self.coll.outline.walk(cls=WebPage)):
