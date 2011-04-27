@@ -31,16 +31,11 @@ def get_num_for_url(fn, target_url):
     f = open(fn)
     num_articles = read_int(f, 24, 4)
     url_pointer_list = read_int(f, 32, 8)
-    res = 0
-    for dir_entry_pos in walk_url_pointers(f, url_pointer_list, num_articles):
-        cluster_num = read_int(f, dir_entry_pos + 8, 4)
-        blob_num = read_int(f, dir_entry_pos + 12, 4)
+    for idx, dir_entry_pos in enumerate(walk_url_pointers(f, url_pointer_list, num_articles)):
         url = read_str(f, dir_entry_pos + 16)
         if url == target_url:
-            res = blob_num + cluster_num
-            break
-    f.close()
-    return res
+            return idx
+    return 0
 
 def set_main_page(fn, target_url):
     bn = get_num_for_url(fn, target_url)
