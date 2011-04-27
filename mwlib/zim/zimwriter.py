@@ -65,11 +65,24 @@ class ZIPArticleSource(pyzim.IterArticleSource):
         article.webpage = w
         return (article, title)
 
+    def add_css(self):
+        css_path = self.coll.outline.items[0].css_path
+        aid = src2aid(css_path)
+        self.css_aid = aid
+        css = pyzim.Article(aid, aid=aid, url=aid, mimetype='text/css', namespace='-')
+        css.filename = css_path
+        self.aid2article[aid] = css
+        return css
+
     def __iter__(self):
         num_items = len(self.coll.outline.items)
+
         article, aid =  self.dump_toc(self.coll)
         self.aid2article[aid] = article
         yield article
+
+        yield self.add_css()
+
         for n, (lvl, webpage) in enumerate(self.coll.outline.walk(cls=WebPage)):
             if self.status_callback:
                 self.status_callback(progress=100*n/num_items)
@@ -94,15 +107,6 @@ class ZIPArticleSource(pyzim.IterArticleSource):
                 self.aid2article[aid] = img
                 yield img
 
-            if webpage.css_path:
-                aid = src2aid(webpage.css_path)
-                title = aid # TODO
-                url = aid
-                mimetype = 'text/css'
-                css = pyzim.Article(title, aid=aid, url=url, mimetype=mimetype, namespace='-')
-                css.filename = webpage.css_path
-                self.aid2article[aid] = css
-                yield css
 
     def get_data(self, aid):
         article = self.aid2article[aid]
@@ -133,13 +137,8 @@ class ZIPArticleSource(pyzim.IterArticleSource):
             a.attrib['href'] = target
 
     def rewrite_css_links(self, webpage):
-        for link in webpage.tree.xpath('//link'):
-            href = link.attrib['href']
-            aid = src2aid(href)
-            if aid in self.aid2article:
-                link.attrib['href'] = '/-/{0}'.format(aid)
-            else:
-                link.attrib['href'] = urlparse.urljoin(webpage.url, link.attrib['href'])
+        for link in webpage.tree.xpath('//link[@type="text/css"]'):
+            link.attrib['href'] = '/-/{0}'.format(self.css_aid)
 
     def rewrite_img_srcs(self, webpage):
         for img in webpage.tree.xpath('//img'):
