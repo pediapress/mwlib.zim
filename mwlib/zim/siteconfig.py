@@ -15,7 +15,8 @@ fallback = {'figure':{'container': '//*[@width>100]',
             'content': '//div[@id="content"]',
             }
 
-default_config = {'http://wikipedia.org':{'remove_class':['editsection'],
+default_config = {'http://wikipedia.org':{'remove_class':['editsection',
+                                                          'noprint'],
                                           'xslt':'''
 <xsl:template match="//img[contains(@class,'tex')]">
  <math>
