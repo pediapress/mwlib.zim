@@ -1,5 +1,8 @@
 .. -*- mode: rst; coding: utf-8 -*-
 
+The latest version of this file can be found at:
+http://code.pediapress.com/git/mwlib.zim?p=mwlib.zim;a=blob;f=README.txt
+
 ======================================================================
 mwlib.zim - zim file writer 
 ======================================================================
