@@ -7,7 +7,8 @@ http://code.pediapress.com/git/mwlib.zim?p=mwlib.zim;a=blob;f=README.txt
 mwlib.zim - zim file writer 
 ======================================================================
 
-Repacks mwlib zip files into zim files.
+Repacks mwlib zip files into zim files. After installation the writer
+option 'zim' will be available in mwlib.
 
 ======================================================================
 Installation
@@ -27,12 +28,22 @@ Required software:
 pyzim requires zimlib and zimwriter - requirements for that can
 be found at http://www.openzim.org/Releases
 
+======================================================================
+Test
+======================================================================
+
+The installation can be tested on the command line using mw-render.
+For example:
+mw-render -w zim -c :en -o test.zim Test
+
+======================================================================
 Contact/Further Information
 ======================================================================
 For further information please visit our trac instance running at
 http://code.pediapress.com
 The current development version can also be found there.
 
+======================================================================
 License
 ======================================================================
 Copyright (c) 20011 PediaPress GmbH
