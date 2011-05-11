@@ -23,7 +23,7 @@ Required software:
 * cython
 * lxml
 * mwlib (http://code.pediapress.com/git/mwlib)
-* pyzim (https://github.com/schmir/pyzim)
+* pyzim (http://code.pediapress.com/git/pyzim)
 
 pyzim requires zimlib and zimwriter - requirements for that can
 be found at http://www.openzim.org/Releases
