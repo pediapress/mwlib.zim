@@ -31,6 +31,9 @@ def src2aid(src):
 def clean_url(url):
     if isinstance(url, unicode):
         url = url.encode('utf-8')
+    if urlparse.urlsplit(url).scheme not in  ['http', '']:
+        return urllib.quote(urllib.unquote(url), safe='/=&+')
+
     return urlparse.urlunsplit([urllib.quote(urllib.unquote(frag), safe='/=&+')
                                 for frag in urlparse.urlsplit(url)])
 
@@ -55,7 +58,6 @@ class ZIPArticleSource(pyzim.IterArticleSource):
 
         w = WebPage(coll=self.coll, title=title, url='')
         html = ['<div id="content">', '<h2 style="font-family:sans-serif;">%s</h2>' % self.main_page_name, '<ul style="font-family:sans-serif;">']
-
         for lvl, webpage in self.coll.outline.walk(cls=WebPage):
             url = clean_url(webpage.canonical_url.encode('utf-8'))
             html.append('<li><a href="%s">%s</a></li>' % (url, webpage.title.encode('utf-8')))
@@ -63,6 +65,7 @@ class ZIPArticleSource(pyzim.IterArticleSource):
         html.extend(['</ul>', '</div>'])
         html = ''.join(html)
         html += ' '*1000 # kiwix is broken and skips a certain amount of content
+
         w.tree = w._get_parse_tree(html)
         article.webpage = w
         self.aid2article[title] = article
