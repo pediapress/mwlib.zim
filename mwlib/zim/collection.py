@@ -269,7 +269,10 @@ def coll_from_zip(basedir, env):
         from mwlib import wiki
         env = wiki.makewiki(env)
 
-    coll = Collection(basedir=basedir)
+    coll = Collection(basedir=basedir,
+                      title=env.metabook.title or '',
+                      subtitle=env.metabook.subtitle or '',
+                      editor=env.metabook.editor or '',)
     missing_images = []
     for item in env.metabook.walk():
         if item.type == 'chapter':
