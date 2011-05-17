@@ -19,7 +19,7 @@ from lxml import etree
 
 from mwlib.zim.collection import WebPage, coll_from_zip
 from mwlib.zim.setmainpage import set_main_page
-
+from mwlib.zim import config
 import pyzim
 
 
@@ -96,11 +96,19 @@ class ZIPArticleSource(pyzim.IterArticleSource):
 
         m = {'Title': self.coll.title,
              'Subtitle': self.coll.subtitle,
+             'Creator': config.creator,
              'Date': datetime.date.today().isoformat(),
              'Language': language,
              'Source': source,
              }
         return m
+
+    def add_favicon(self):
+        title = 'favicon.png'
+        article = pyzim.Article(title, aid=title, url=title, mimetype='text/plain', namespace='-')
+        article.filename = os.path.join(os.path.dirname(__file__), title)
+        self.aid2article[title] = article
+        return article
 
     def __iter__(self):
         num_items = len(self.coll.outline.items)
@@ -109,9 +117,11 @@ class ZIPArticleSource(pyzim.IterArticleSource):
         yield self.add_css()
 
         for key, value in self.metadata.items():
-            article = pyzim.Article(key, aid=key, url=key, mimetype='text/html', namespace='M')
+            article = pyzim.Article(key, aid=key, url=key, mimetype='text/plain', namespace='M')
             self.aid2article[key] = article
             yield article
+
+        yield self.add_favicon()
 
         for n, (lvl, webpage) in enumerate(self.coll.outline.walk(cls=WebPage)):
             if self.status_callback:

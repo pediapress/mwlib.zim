@@ -4,6 +4,8 @@ include mwlib/__init__.py
 include mwlib/zim/__init__.py
 include mwlib/zim/_version.py
 include mwlib/zim/collection.py
+include mwlib/zim/config.py
+include mwlib/zim/favicon.png
 include mwlib/zim/setmainpage.py
 include mwlib/zim/siteconfig.py
 include mwlib/zim/wp.css
