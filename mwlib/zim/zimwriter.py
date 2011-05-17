@@ -105,7 +105,7 @@ class ZIPArticleSource(pyzim.IterArticleSource):
 
     def add_favicon(self):
         title = 'favicon.png'
-        article = pyzim.Article(title, aid=title, url=title, mimetype='text/plain', namespace='-')
+        article = pyzim.Article(title, aid=title, url=title, mimetype='image/png', namespace='-')
         article.filename = os.path.join(os.path.dirname(__file__), title)
         self.aid2article[title] = article
         return article
