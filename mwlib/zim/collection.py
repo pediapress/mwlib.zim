@@ -217,13 +217,14 @@ class Outline(object):
 
 
 class Collection(object):
-    def __init__(self, basedir, title=None, subtitle=None, editor=None, custom_siteconfig=None):
+    def __init__(self, basedir, title=None, subtitle=None, editor=None, custom_siteconfig=None, language=''):
         self.basedir = basedir
         self.title = title
         self.subtitle = subtitle
         self.editor = editor
         self.outline = Outline(self)
         self.custom_siteconfig = custom_siteconfig
+        self.language = language
         self.siteconfig = SiteConfigHandler(custom_siteconfig=custom_siteconfig)
 
     def dump(self):
@@ -272,7 +273,8 @@ def coll_from_zip(basedir, env):
     coll = Collection(basedir=basedir,
                       title=env.metabook.title or '',
                       subtitle=env.metabook.subtitle or '',
-                      editor=env.metabook.editor or '',)
+                      editor=env.metabook.editor or '',
+                      language=env.wiki.siteinfo['general'].get('lang', ''))
     missing_images = []
     for item in env.metabook.walk():
         if item.type == 'chapter':
