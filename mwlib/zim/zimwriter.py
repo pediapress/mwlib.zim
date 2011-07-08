@@ -31,7 +31,7 @@ def src2aid(src):
 def clean_url(url):
     if isinstance(url, unicode):
         url = url.encode('utf-8')
-    if urlparse.urlsplit(url).scheme not in  ['http', '']:
+    if urlparse.urlsplit(url).scheme not in  ['http', 'https', '']:
         return urllib.quote(urllib.unquote(url), safe='/=&+')
 
     return urlparse.urlunsplit([urllib.quote(urllib.unquote(frag), safe='/=&+')
