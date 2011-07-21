@@ -263,6 +263,10 @@ class Collection(object):
         for level, webpage in self.outline.walk(cls=WebPage):
             webpage.fetch()
 
+def urllib2_quote(url):
+    if isinstance(url, unicode):
+        url = url.encode("utf-8")
+    return urllib2.quote(url)
 
 def coll_from_zip(basedir, env):
 
@@ -290,7 +294,7 @@ def coll_from_zip(basedir, env):
         html = '<div id="content"><h2>%s</h2>\n\n%s</div>' % (title.encode('utf-8'), html.encode('utf-8'))
 
         wp = WebPage(coll, title, url, user_agent='Mozilla/5.0') # images
-        wp.canonical_url = urlparse.urljoin(item._env.wiki.siteinfo['general']['base'], urllib2.quote(title.replace(' ', '_')))
+        wp.canonical_url = urlparse.urljoin(item._env.wiki.siteinfo['general']['base'], urllib2_quote(title.replace(' ', '_')))
         open(wp.get_path('content.orig'), 'wb').write(html)
         wp.tree = wp._get_parse_tree(html)
 
