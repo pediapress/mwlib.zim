@@ -8,6 +8,7 @@ import re
 import urllib2
 import urlparse
 import shutil
+import subprocess
 
 #from gevent.pool import Pool
 import simplejson as json
@@ -268,6 +269,32 @@ def urllib2_quote(url):
         url = url.encode("utf-8")
     return urllib2.quote(url)
 
+
+scaled_images = {}
+def limit_size(img, fn):
+    width = int(img.get('width') or '0')
+    src = img.attrib['src']
+    if src in scaled_images:
+        return scaled_images[src]
+    if width:
+        target_fn = '%s_small%s' % (fn, os.path.splitext(fn)[1])
+        cmd = ['convert',
+               fn,
+               '-resize', '%d' % width,
+               target_fn,
+               ]
+        try:
+            err = subprocess.call(cmd)
+        except OSError:
+            err = True
+
+        if not err:
+            scaled_images[src] = target_fn
+            return target_fn
+        else:
+            print 'ERROR: scaling down image failed', src, fn
+    return fn
+
 def coll_from_zip(basedir, env):
 
     if isinstance(env, basestring):
@@ -298,7 +325,8 @@ def coll_from_zip(basedir, env):
         open(wp.get_path('content.orig'), 'wb').write(html)
         wp.tree = wp._get_parse_tree(html)
 
-        for src in wp.tree.xpath('.//img/@src'):
+        for img in wp.tree.xpath('.//img'):
+            src  = img.attrib['src']
             frags = src.split('/')
             if len(frags):
                 fn = None
@@ -306,6 +334,7 @@ def coll_from_zip(basedir, env):
                     title = urlparse.unquote(title.encode('utf-8')).decode('utf-8')
                     fn = item.wiki.env.images.getDiskPath(title)
                     if fn:
+                        fn = limit_size(img, fn)
                         wp.images[src] = fn
                         break
                 if not fn and title not in missing_images:
