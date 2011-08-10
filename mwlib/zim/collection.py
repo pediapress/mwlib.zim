@@ -11,7 +11,10 @@ import shutil
 import subprocess
 
 #from gevent.pool import Pool
-import simplejson as json
+try:
+    import json
+except ImportError:
+    import simplejson as json
 
 from mwlib.zim.siteconfig import SiteConfigHandler
 
