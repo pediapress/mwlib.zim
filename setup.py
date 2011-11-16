@@ -5,40 +5,35 @@
 
 import os
 from setuptools import setup
-import distutils.util
 
-version=None
-execfile(distutils.util.convert_path('mwlib/zim/_version.py')) 
-# adds 'version' to local namespace
 
-install_requires=['mwlib', 'pyzim', 'lxml']
+def get_version():
+    d = {}
+    execfile("mwlib/zim/__init__.py", d, d)
+    return d["version"]
 
-def read_long_description():
-    fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), "README.txt")
-    return open(fn).read()
 
 def main():
-    if os.path.exists(distutils.util.convert_path('Makefile')):
+    if os.path.exists("Makefile"):
         print 'Running make'
         os.system('make')
+
     setup(
         name="mwlib.zim",
-        version=str(version),
-        entry_points = {
-            'mwlib.writers': ['zim = mwlib.zim.zimwriter:writer'],
-        },
-        install_requires=install_requires,
+        version=get_version(),
+        entry_points={
+            'mwlib.writers': ['zim = mwlib.zim.zimwriter:writer']},
+        install_requires=['mwlib', 'pyzim', 'lxml'],
         packages=["mwlib", "mwlib.zim"],
         namespace_packages=['mwlib'],
         zip_safe=False,
         include_package_data=True,
-        url = "http://code.pediapress.com/",
+        url="http://code.pediapress.com/",
         description="generate zim files from mediawiki markup",
-        long_description = read_long_description(),
+        long_description=open("README.txt").read(),
         license="BSD License",
         maintainer="pediapress.com",
-        maintainer_email="info@pediapress.com",
-    )
+        maintainer_email="info@pediapress.com")
 
 if __name__ == '__main__':
     main()
