@@ -213,12 +213,22 @@ def writer(env, output,
            status_callback=None,
            lang=None,
            ):
+    # ZIPArticleSource.create needs a name with .zim extension
+    if output.endswith(".zim"):
+        rename_to = None
+    else:
+        rename_to = output
+        output = rename_to + ".zim"
+
     if status_callback:
         status_callback(status='generating zimfile')
     print 'STARTING'
     src = ZIPArticleSource(env, status_callback)
     print 'INITIALIZED'
     src.create(output)
+    if rename_to:
+        os.rename(output, rename_to)
+        output = rename_to
     print 'FINISHED CREATING ZIM FILE'
     set_main_page(output, src.main_page_name)
     print 'SET MAIN PAGE'
