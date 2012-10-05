@@ -23,7 +23,7 @@ def main():
         version=get_version(),
         entry_points={
             'mwlib.writers': ['zim = mwlib.zim.zimwriter:writer']},
-        install_requires=['mwlib', 'pyzim', 'lxml'],
+        install_requires=['mwlib', 'pyzim>=0.3', 'lxml'],
         packages=["mwlib", "mwlib.zim"],
         namespace_packages=['mwlib'],
         zip_safe=False,

@@ -18,7 +18,6 @@ import datetime
 from lxml import etree
 
 from mwlib.zim.collection import WebPage, coll_from_zip
-from mwlib.zim.setmainpage import set_main_page
 from mwlib.zim import config
 import pyzim
 
@@ -40,12 +39,14 @@ def clean_url(url):
 
 class ZIPArticleSource(pyzim.IterArticleSource):
     def __init__(self, zipfn, status_callback):
+        pyzim.IterArticleSource.__init__(self)
         self.tmpdir = tempfile.mkdtemp()
         self.coll = coll_from_zip(self.tmpdir, zipfn)
         self.aid2article = {}
         self.url2article = {}
         self.status_callback = status_callback
         self.main_page_name = 'Table of Contents'
+        self.mainPage = self.main_page_name  # mainPage is a property defined in _pyzim.pyx
         self.metadata = self.set_metadata()
 
     def __del__(self):
@@ -230,8 +231,6 @@ def writer(env, output,
         os.rename(output, rename_to)
         output = rename_to
     print 'FINISHED CREATING ZIM FILE'
-    set_main_page(output, src.main_page_name)
-    print 'SET MAIN PAGE'
 
 writer.description = 'ZIM Files'
 writer.content_type = 'application/zim' # FIXME: verify/correct
